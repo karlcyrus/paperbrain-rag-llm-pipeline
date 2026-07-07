@@ -34,8 +34,8 @@ export default function ChatInput({ onSend, disabled, loading }: ChatInputProps)
   }
 
   return (
-    <div className="border-t border-gray-200 bg-white p-4">
-      <div className="max-w-3xl mx-auto flex items-end gap-3">
+    <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 sm:p-4">
+      <div className="max-w-3xl mx-auto flex items-end gap-2 sm:gap-3">
         <textarea
           ref={textareaRef}
           value={value}
@@ -44,7 +44,7 @@ export default function ChatInput({ onSend, disabled, loading }: ChatInputProps)
           placeholder="Ask a question about your document..."
           rows={1}
           disabled={disabled}
-          className="flex-1 resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563eb] focus:border-transparent disabled:opacity-50 disabled:bg-gray-50"
+          className="flex-1 resize-none rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-[#111827] dark:text-gray-100 px-3 sm:px-4 py-2.5 sm:py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563eb] focus:border-transparent disabled:opacity-50 disabled:bg-gray-50 dark:disabled:bg-gray-800 placeholder:text-gray-400 dark:placeholder:text-gray-500"
         />
         <button
           onClick={handleSend}

@@ -1,6 +1,10 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 import { generateEmbedding, generateChatResponse } from '@/lib/gemini'
 
+async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 export async function POST(request: Request) {
   try {
     // 1. Authenticate the user
@@ -59,7 +63,7 @@ export async function POST(request: Request) {
     if (matchError) {
       console.error('Vector search error:', matchError)
       return new Response(
-        JSON.stringify({ error: 'Failed to search documents' }),
+        JSON.stringify({ error: 'Failed to search documents. The vector search encountered an error.' }),
         {
           status: 500,
           headers: { 'Content-Type': 'application/json' },
@@ -70,8 +74,8 @@ export async function POST(request: Request) {
     // 5. Build the RAG prompt with numbered excerpts
     const excerpts = (matchedChunks || [])
       .map(
-        (chunk: { content: string }, i: number) =>
-          `[Excerpt ${i + 1}]:\n${chunk.content}`
+        (chunk: { content: string; document_id: string }, i: number) =>
+          `[Excerpt ${i + 1} (Document: ${chunk.document_id})]:\n${chunk.content}`
       )
       .join('\n\n')
 
@@ -97,10 +101,60 @@ User Question: ${question.trim()}`
       })
     )
 
-    // 7. Stream the Gemini response
-    const stream = await generateChatResponse(prompt)
+    // 7. Stream the Gemini response with retry logic for 429/503
+    let stream: ReadableStream
+    let lastError: Error | null = null
 
-    return new Response(stream, {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        stream = await generateChatResponse(prompt)
+        lastError = null
+        break
+      } catch (err) {
+        lastError = err instanceof Error ? err : new Error(String(err))
+        const errMessage = lastError.message
+
+        // Check if it's a retryable error (429 or 503)
+        const is429 = errMessage.includes('429')
+        const is503 = errMessage.includes('503')
+
+        if ((is429 || is503) && attempt === 0) {
+          const waitMs = is429 ? 3000 : 2000
+          console.log(`Gemini returned ${is429 ? '429' : '503'}, retrying in ${waitMs}ms...`)
+          await sleep(waitMs)
+          continue
+        }
+
+        // Non-retryable or second attempt failed
+        if (is429) {
+          return new Response(
+            JSON.stringify({ error: 'The AI model is currently rate limited. Please wait a moment and try again.' }),
+            {
+              status: 429,
+              headers: { 'Content-Type': 'application/json' },
+            }
+          )
+        }
+
+        if (is503) {
+          return new Response(
+            JSON.stringify({ error: 'The AI service is temporarily unavailable. Please try again in a few seconds.' }),
+            {
+              status: 503,
+              headers: { 'Content-Type': 'application/json' },
+            }
+          )
+        }
+
+        throw lastError
+      }
+    }
+
+    if (lastError) {
+      throw lastError
+    }
+
+    return new Response(stream!, {
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
         'Transfer-Encoding': 'chunked',
@@ -109,7 +163,8 @@ User Question: ${question.trim()}`
     })
   } catch (error) {
     console.error('Chat error:', error)
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+    const message = error instanceof Error ? error.message : 'An unexpected error occurred'
+    return new Response(JSON.stringify({ error: `Chat failed: ${message}` }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     })

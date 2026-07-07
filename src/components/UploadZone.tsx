@@ -114,30 +114,30 @@ export default function UploadZone({ onUploadComplete }: UploadZoneProps) {
 
         {uploading ? (
           <div className="space-y-3">
-            <div className="w-10 h-10 mx-auto rounded-full border-3 border-gray-200 border-t-[#2563eb] animate-spin" />
-            <p className="text-sm font-medium text-[#111827]">{statusMessage}</p>
+            <div className="w-10 h-10 mx-auto rounded-full border-3 border-gray-200 dark:border-gray-600 border-t-[#2563eb] animate-spin" />
+            <p className="text-sm font-medium text-[#111827] dark:text-gray-100">{statusMessage}</p>
             <div className="progress-bar max-w-xs mx-auto">
               <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
             </div>
-            <p className="text-xs text-gray-400">{progress}%</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">{progress}%</p>
           </div>
         ) : (
           <div className="space-y-2">
-            <div className="w-12 h-12 mx-auto rounded-full bg-blue-50 flex items-center justify-center">
+            <div className="w-12 h-12 mx-auto rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
               <svg className="w-6 h-6 text-[#2563eb]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
               </svg>
             </div>
-            <p className="text-sm font-medium text-[#111827]">
+            <p className="text-sm font-medium text-[#111827] dark:text-gray-100">
               {isDragActive ? 'Drop your file here' : 'Drag & drop a document, or click to browse'}
             </p>
-            <p className="text-xs text-gray-400">PDF, TXT, or DOCX — up to 10MB</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">PDF, TXT, or DOCX — up to 10MB</p>
           </div>
         )}
       </div>
 
       {error && (
-        <div className="mt-3 text-sm text-red-600 text-center animate-fade-in">
+        <div className="mt-3 text-sm text-red-600 dark:text-red-400 text-center animate-fade-in">
           {error}
         </div>
       )}

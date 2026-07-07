@@ -24,10 +24,10 @@ export default function ChatMessage({ role, content }: ChatMessageProps) {
         {content ? (
           <ReactMarkdown>{content}</ReactMarkdown>
         ) : (
-          <div className="flex items-center gap-1">
-            <span className="w-2 h-2 bg-gray-400 rounded-full animate-[pulse_1s_ease-in-out_infinite]" />
-            <span className="w-2 h-2 bg-gray-400 rounded-full animate-[pulse_1s_ease-in-out_0.2s_infinite]" />
-            <span className="w-2 h-2 bg-gray-400 rounded-full animate-[pulse_1s_ease-in-out_0.4s_infinite]" />
+          <div className="flex items-center gap-1.5 py-1 px-1">
+            <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full typing-dot" />
+            <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full typing-dot" />
+            <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full typing-dot" />
           </div>
         )}
       </div>
