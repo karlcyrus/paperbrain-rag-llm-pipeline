@@ -42,13 +42,15 @@ export async function POST(request: Request) {
     }
 
     // 3. Generate embedding for the question
+    console.log('Generating embedding for question...')
     const queryEmbedding = await generateEmbedding(question.trim())
+    console.log('Embedding generated, searching chunks...')
 
     // 4. Search for matching chunks via Supabase RPC
     const { data: matchedChunks, error: matchError } = await supabase.rpc(
       'match_document_chunks',
       {
-        query_embedding: JSON.stringify(queryEmbedding),
+        query_embedding: `[${queryEmbedding.join(',')}]`,
         match_count: 8,
         filter_document_ids: documentIds,
       }
@@ -102,7 +104,7 @@ User Question: ${question.trim()}`
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
         'Transfer-Encoding': 'chunked',
-        'X-Sources': JSON.stringify(sources),
+        'X-Sources': Buffer.from(JSON.stringify(sources)).toString('base64'),
       },
     })
   } catch (error) {

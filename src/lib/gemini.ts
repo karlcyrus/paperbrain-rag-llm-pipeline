@@ -62,7 +62,7 @@ export async function generateChatResponse(prompt: string): Promise<ReadableStre
   }
 
   const response = await fetch(
-    `${GEMINI_API_BASE}/models/gemini-2.0-flash:streamGenerateContent?key=${apiKey}&alt=sse`,
+    `${GEMINI_API_BASE}/models/gemini-2.5-flash:streamGenerateContent?key=${apiKey}&alt=sse`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

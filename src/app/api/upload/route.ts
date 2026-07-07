@@ -101,9 +101,15 @@ export async function POST(request: Request) {
       )
     }
 
-    // 8. Generate embeddings and store chunks
+    // 8. Generate embeddings and store chunks (with rate limiting)
     const chunkRecords = []
-    for (const chunk of chunks) {
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i]
+      // Add delay between calls to stay under free tier limit (100 req/min)
+      if (i > 0) {
+        await new Promise(resolve => setTimeout(resolve, 700))
+      }
+      console.log(`Embedding chunk ${i + 1}/${chunks.length}...`)
       const embedding = await generateEmbedding(chunk.content)
       chunkRecords.push({
         document_id: document.id,

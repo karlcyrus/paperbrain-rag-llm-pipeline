@@ -71,12 +71,12 @@ export default function ChatPage({ params }: { params: Promise<{ documentId: str
         throw new Error(errData.error || 'Failed to get response')
       }
 
-      // Parse sources from header
+      // Parse sources from header (base64 encoded)
       let sources: Source[] = []
       const sourcesHeader = res.headers.get('X-Sources')
       if (sourcesHeader) {
         try {
-          sources = JSON.parse(sourcesHeader)
+          sources = JSON.parse(atob(sourcesHeader))
         } catch {
           // Ignore parse errors
         }
