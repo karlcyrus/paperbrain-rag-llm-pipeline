@@ -32,20 +32,16 @@ export function chunkText(text: string): TextChunk[] {
 
     // If we haven't reached the end of the text, try to break at a sentence boundary
     if (end < cleaned.length) {
-      // Look for the last sentence-ending punctuation within the chunk
       const segment = cleaned.slice(start, end)
       const lastSentenceEnd = Math.max(
         segment.lastIndexOf('. '),
         segment.lastIndexOf('? '),
         segment.lastIndexOf('! '),
-        segment.lastIndexOf('.\n'),
-        segment.lastIndexOf('\n\n')
       )
 
       // Only use sentence boundary if it's in the latter half of the chunk
-      // to avoid very small chunks
       if (lastSentenceEnd > CHUNK_SIZE / 2) {
-        end = start + lastSentenceEnd + 1 // +1 to include the punctuation
+        end = start + lastSentenceEnd + 2 // +2 to include the punctuation and space
       }
     } else {
       end = cleaned.length
@@ -58,9 +54,13 @@ export function chunkText(text: string): TextChunk[] {
     }
 
     // Move start forward, accounting for overlap
-    start = end - CHUNK_OVERLAP
-    if (start <= chunks[chunks.length - 1]?.index && start + CHUNK_OVERLAP >= cleaned.length) {
-      break // Prevent infinite loop at end of text
+    const newStart = end - CHUNK_OVERLAP
+
+    // Prevent infinite loop: ensure we always move forward
+    if (newStart <= start) {
+      start = end
+    } else {
+      start = newStart
     }
   }
 
