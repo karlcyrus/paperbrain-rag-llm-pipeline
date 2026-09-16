@@ -56,50 +56,50 @@ export default function DocumentCard({ document, onDelete, selectable, selected,
 
   return (
     <div
-      className={`bg-white dark:bg-gray-800 rounded-xl border p-4 shadow-sm hover:shadow-md transition-shadow animate-fade-in ${
+      className={`bg-white/80 dark:bg-zinc-900/40 backdrop-blur-sm rounded-xl border p-5 shadow-sm hover:shadow-lg dark:shadow-lg transition-all duration-300 hover:-translate-y-1 animate-fade-in ${
         selected
-          ? 'border-[#2563eb] ring-2 ring-blue-200 dark:ring-blue-800'
-          : 'border-gray-200 dark:border-gray-700'
+          ? 'border-blue-500 ring-2 ring-blue-500/20'
+          : 'border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 dark:hover:shadow-2xl'
       }`}
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-4">
         {selectable && (
-          <label className="flex items-center mt-0.5 cursor-pointer">
+          <label className="flex items-center mt-1 cursor-pointer">
             <input
               type="checkbox"
               checked={selected || false}
               onChange={() => onToggleSelect?.(document.id)}
-              className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-[#2563eb] focus:ring-[#2563eb] cursor-pointer accent-[#2563eb]"
+              className="w-4 h-4 rounded border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-blue-500 focus:ring-blue-500 focus:ring-offset-white dark:focus:ring-offset-zinc-950 cursor-pointer accent-blue-500 transition-colors duration-300"
             />
           </label>
         )}
-        <span className="text-2xl flex-shrink-0">{icon}</span>
+        <span className="text-2xl flex-shrink-0 drop-shadow-sm dark:drop-shadow-md">{icon}</span>
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-[#111827] dark:text-gray-100 truncate" title={document.name}>
+          <h3 className="text-sm font-medium text-gray-900 dark:text-zinc-100 truncate tracking-tight transition-colors duration-300" title={document.name}>
             {document.name}
           </h3>
-          <div className="flex items-center gap-2 mt-1">
-            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${badgeColor}`}>
+          <div className="flex items-center gap-3 mt-2">
+            <span className={`text-[10px] font-bold tracking-widest px-2 py-0.5 rounded-sm transition-colors duration-300 ${badgeColor}`}>
               {ext.toUpperCase()}
             </span>
-            <span className="text-xs text-gray-400 dark:text-gray-500">{formattedDate}</span>
+            <span className="text-xs text-gray-500 dark:text-zinc-500 font-light transition-colors duration-300">{formattedDate}</span>
           </div>
         </div>
       </div>
-      <div className="flex items-center gap-2 mt-4">
+      <div className="flex items-center gap-3 mt-5">
         <Link
           href={`/chat/${document.id}`}
-          className="flex-1 text-center text-sm font-medium py-2 rounded-lg bg-[#2563eb] text-white hover:bg-blue-700 transition-colors"
+          className="flex-1 text-center text-sm font-medium py-2 rounded-lg bg-blue-600 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:bg-blue-700 dark:hover:bg-white transition-colors shadow-md dark:shadow-lg shadow-blue-500/20 dark:shadow-white/5"
         >
           Chat
         </Link>
         <button
           onClick={handleDelete}
           disabled={deleting}
-          className={`text-sm font-medium py-2 px-4 rounded-lg transition-colors cursor-pointer ${
+          className={`text-sm font-medium py-2 px-4 rounded-lg transition-colors cursor-pointer border ${
             confirmDelete
-              ? 'bg-red-600 text-white hover:bg-red-700'
-              : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              ? 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/20 hover:bg-red-100 dark:hover:bg-red-500/20'
+              : 'bg-gray-50 dark:bg-zinc-950 text-gray-600 dark:text-zinc-400 border-gray-200 dark:border-zinc-800 hover:text-gray-900 dark:hover:text-zinc-200 hover:border-gray-300 dark:hover:border-zinc-700'
           } disabled:opacity-50`}
         >
           {deleting ? '...' : confirmDelete ? 'Confirm' : 'Delete'}
