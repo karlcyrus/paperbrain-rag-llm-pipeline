@@ -1,9 +1,61 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
+
+// Shared background component (Particles, Grid, Spotlight)
+const TechBackground = () => {
+  const [mounted, setMounted] = useState(false);
+  const [particles, setParticles] = useState<Array<{id: number, left: string, duration: string, delay: string, symbol: string, size: string}>>([]);
+
+  useEffect(() => {
+    const symbols = ['+', '-', 'x', '/', '[ ]', '{ }', '< >'];
+    const newParticles = Array.from({ length: 40 }).map((_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      duration: `${Math.random() * 25 + 20}s`,
+      delay: `-${Math.random() * 25}s`,
+      symbol: symbols[Math.floor(Math.random() * symbols.length)],
+      size: Math.random() > 0.5 ? 'text-sm' : 'text-xs'
+    }));
+    setParticles(newParticles);
+    setMounted(true);
+  }, []);
+
+  return (
+    <div className="absolute inset-0 z-0 pointer-events-none">
+      {mounted && (
+        <div className="absolute inset-0 overflow-hidden">
+          {particles.map((p) => (
+            <div
+              key={p.id}
+              className={`absolute bottom-[-10%] ${p.size} text-zinc-400/50 font-mono select-none`}
+              style={{
+                left: p.left,
+                animation: `floatUpData ${p.duration} linear infinite`,
+                animationDelay: p.delay,
+              }}
+            >
+              {p.symbol}
+            </div>
+          ))}
+          <style dangerouslySetInnerHTML={{__html: `
+            @keyframes floatUpData {
+              0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+              10% { opacity: 1; }
+              90% { opacity: 1; }
+              100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
+            }
+          `}} />
+        </div>
+      )}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-[600px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/10 via-zinc-950/0 to-transparent" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff15_1px,transparent_1px),linear-gradient(to_bottom,#ffffff15_1px,transparent_1px)] bg-[size:32px_32px]" />
+    </div>
+  );
+}
 
 export default function SignupPage() {
   const router = useRouter()
@@ -38,21 +90,24 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 dark:bg-gray-900">
-      <div className="w-full max-w-sm">
+    <div className="min-h-screen bg-zinc-950 selection:bg-zinc-800 relative overflow-hidden flex items-center justify-center px-4">
+      
+      <TechBackground />
+
+      <div className="relative z-10 w-full max-w-sm">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 text-2xl font-bold text-[#111827] dark:text-gray-100">
-            <span>🧠</span>
+          <Link href="/" className="inline-flex items-center gap-2 text-2xl font-semibold text-zinc-100 tracking-tight hover:text-white transition-colors">
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse" />
             <span>PaperBrain</span>
           </Link>
-          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Create your account</p>
+          <p className="mt-2 text-sm text-zinc-400 font-light">Create your account</p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm p-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="bg-zinc-900/50 backdrop-blur-md rounded-2xl border border-zinc-800/50 shadow-2xl p-6 sm:p-8">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-[#111827] dark:text-gray-100 mb-1.5">
-                Email
+              <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-2">
+                Email Address
               </label>
               <input
                 id="email"
@@ -61,11 +116,11 @@ export default function SignupPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="you@example.com"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-[#111827] dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563eb] focus:border-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                className="w-full px-4 py-3 rounded-lg border border-zinc-800 bg-zinc-950/50 text-zinc-100 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-500 focus:border-zinc-500 placeholder:text-zinc-600 transition-colors"
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-[#111827] dark:text-gray-100 mb-1.5">
+              <label htmlFor="password" className="block text-sm font-medium text-zinc-300 mb-2">
                 Password
               </label>
               <input
@@ -74,15 +129,15 @@ export default function SignupPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                placeholder="••••••••"
                 minLength={6}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-[#111827] dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563eb] focus:border-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                placeholder="••••••••"
+                className="w-full px-4 py-3 rounded-lg border border-zinc-800 bg-zinc-950/50 text-zinc-100 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-500 focus:border-zinc-500 placeholder:text-zinc-600 transition-colors"
               />
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Minimum 6 characters</p>
+              <p className="text-xs text-zinc-500 mt-2 font-light">Minimum 6 characters</p>
             </div>
 
             {error && (
-              <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 rounded-lg px-3 py-2 animate-fade-in">
+              <div className="text-sm text-red-400 bg-red-950/30 border border-red-900/50 rounded-lg px-4 py-3 animate-fade-in font-light">
                 {error}
               </div>
             )}
@@ -90,7 +145,7 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 rounded-xl bg-[#2563eb] text-white font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-lg bg-zinc-100 text-zinc-900 font-medium hover:bg-white transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
             >
               {loading && (
                 <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
@@ -103,9 +158,9 @@ export default function SignupPage() {
           </form>
         </div>
 
-        <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-6 text-center text-sm text-zinc-500">
           Already have an account?{' '}
-          <Link href="/login" className="text-[#2563eb] dark:text-blue-400 font-medium hover:underline">
+          <Link href="/login" className="text-zinc-300 font-medium hover:text-white transition-colors">
             Sign in
           </Link>
         </p>
